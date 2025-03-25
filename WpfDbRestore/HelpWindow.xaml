@@ -1,0 +1,60 @@
+﻿<Window x:Class="WpfDbRestore.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="Справка" Height="450" Width="800">
+    <Grid Margin="10">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <TextBlock TextWrapping="Wrap" FontSize="14">
+                <TextBlock.Resources>
+                    <Style TargetType="Run">
+                        <Setter Property="FontSize" Value="14"/>
+                    </Style>
+                </TextBlock.Resources>
+                
+                <Run Text="Алгоритм работы" FontWeight="Bold" FontSize="16"/>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="1. Ввод параметров:" FontWeight="Bold"/>
+                <LineBreak/>
+                <Run Text="   • Укажите файл бэкапа PostgreSQL (.backup)"/>
+                <LineBreak/>
+                <Run Text="   • Выберите папку с SQL-скриптами для выполнения после восстановления"/>
+                <LineBreak/>
+                <Run Text="   • Введите параметры подключения к серверу PostgreSQL"/>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="2. Валидация:" FontWeight="Bold"/>
+                <LineBreak/>
+                <Run Text="   • Проверка заполнения всех обязательных полей"/>
+                <LineBreak/>
+                <Run Text="   • Проверка существования файла бэкапа"/>
+                <LineBreak/>
+                <Run Text="   • Проверка отсутствия БД с указанным именем на сервере"/>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="3. Восстановление:" FontWeight="Bold"/>
+                <LineBreak/>
+                <Run Text="   • Создание новой БД"/>
+                <LineBreak/>
+                <Run Text="   • Восстановление бэкапа через утилиту pg_restore"/>
+                <LineBreak/>
+                <Run Text="   • Последовательное выполнение SQL-скриптов из указанной папки"/>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="4. Логирование:" FontWeight="Bold"/>
+                <LineBreak/>
+                <Run Text="   • Все этапы работы записываются в журнал"/>
+                <LineBreak/>
+                <Run Text="   • Ошибки выделяются в логах"/>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="Дополнительно:" FontWeight="Bold"/>
+                <LineBreak/>
+                <Run Text="   • Настройки автоматически сохраняются/восстанавливаются при закрытии/открытии программы."/>
+            </TextBlock>
+        </ScrollViewer>
+    </Grid>
+</Window>
