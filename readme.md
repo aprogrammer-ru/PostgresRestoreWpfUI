@@ -1,4 +1,4 @@
-  ## Postgres Restore Backup
+  ## Postgres Restore Backup Tool WPF
 
     1. **Ввод параметров**:
        - Укажите файл бэкапа (`.backup`)
