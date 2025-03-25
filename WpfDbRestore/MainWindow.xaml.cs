@@ -7,9 +7,6 @@ using Npgsql;
 
 namespace WpfDbRestore
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private const string SettingsFile = "settings.json";
@@ -35,7 +32,6 @@ namespace WpfDbRestore
                     _settings = new AppSettings();
                 }
 
-                // Применяем настройки к элементам управления
                 txtBackupFile.Text = _settings.BackupFile;
                 txtScriptsFolder.Text = _settings.ScriptsFolder;
                 txtHost.Text = _settings.Host;
@@ -56,7 +52,6 @@ namespace WpfDbRestore
         {
             try
             {
-                // Обновляем настройки из элементов управления
                 _settings.BackupFile = txtBackupFile.Text;
                 _settings.ScriptsFolder = txtScriptsFolder.Text;
                 _settings.Host = txtHost.Text;
@@ -86,7 +81,7 @@ namespace WpfDbRestore
         {
             var helpWindow = new HelpWindow
             {
-                Owner = this // Делаем главное окно владельцем
+                Owner = this
             };
             helpWindow.ShowDialog();
         }
@@ -152,26 +147,30 @@ namespace WpfDbRestore
 
         private bool ValidateInputs(out List<string> missingFields)
         {
-            missingFields = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(txtBackupFile.Text)) missingFields.Add("Backup File");
-            if (string.IsNullOrWhiteSpace(txtScriptsFolder.Text)) missingFields.Add("Scripts Folder");
-            if (string.IsNullOrWhiteSpace(txtHost.Text)) missingFields.Add("Host");
-            if (string.IsNullOrWhiteSpace(txtPort.Text)) missingFields.Add("Port");
-            if (string.IsNullOrWhiteSpace(txtUsername.Text)) missingFields.Add("Username");
-            if (string.IsNullOrWhiteSpace(txtPassword.Password)) missingFields.Add("Password");
-            if (string.IsNullOrWhiteSpace(txtDatabase.Text)) missingFields.Add("Database");
-            if (string.IsNullOrWhiteSpace(txtPgRestorePath.Text)) missingFields.Add("pg_restore Path");
-
+            List<string> localMissingFields = new List<string>();
+            Dispatcher.Invoke(() =>
+            {
+                if (string.IsNullOrWhiteSpace(txtBackupFile.Text)) localMissingFields.Add("Backup File");
+                if (string.IsNullOrWhiteSpace(txtScriptsFolder.Text)) localMissingFields.Add("Scripts Folder");
+                if (string.IsNullOrWhiteSpace(txtHost.Text)) localMissingFields.Add("Host");
+                if (string.IsNullOrWhiteSpace(txtPort.Text)) localMissingFields.Add("Port");
+                if (string.IsNullOrWhiteSpace(txtUsername.Text)) localMissingFields.Add("Username");
+                if (string.IsNullOrWhiteSpace(txtPassword.Password)) localMissingFields.Add("Password");
+                if (string.IsNullOrWhiteSpace(txtDatabase.Text)) localMissingFields.Add("Database");
+                if (string.IsNullOrWhiteSpace(txtPgRestorePath.Text)) localMissingFields.Add("pg_restore Path");
+            });
+            missingFields = localMissingFields;
             return missingFields.Count == 0;
         }
 
         private bool CheckBackupFileExists()
         {
-            string backupPath = Path.GetFullPath(txtBackupFile.Text);
+            string backupPath = string.Empty;
+            Dispatcher.Invoke(() => { backupPath = Path.GetFullPath(txtBackupFile.Text); });
+
             if (!File.Exists(backupPath))
             {
-                Log($"Backup file not found: {backupPath}");
+                Dispatcher.Invoke(() => Log($"Backup file not found: {backupPath}"));
                 return false;
             }
 
@@ -180,21 +179,28 @@ namespace WpfDbRestore
 
         private bool CheckDatabaseExists()
         {
-            string connectionString =
-                $"Host={txtHost.Text};Port={txtPort.Text};Username={txtUsername.Text};Password={txtPassword.Password};Database=postgres";
+            string connectionString = string.Empty;
+            Dispatcher.Invoke(() =>
+            {
+                connectionString =
+                    $"Host={txtHost.Text};Port={txtPort.Text};Username={txtUsername.Text};Password={txtPassword.Password};Database=postgres";
+            });
 
             try
             {
                 using (var conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
+                    string cmdText = string.Empty;
+                    Dispatcher.Invoke(() =>
+                        cmdText = $"SELECT 1 FROM pg_database WHERE datname = '{txtDatabase.Text}'");
                     using (var cmd = new NpgsqlCommand(
-                               $"SELECT 1 FROM pg_database WHERE datname = '{txtDatabase.Text}'", conn))
+                               $"{cmdText}", conn))
                     {
                         var result = cmd.ExecuteScalar();
                         if (result != null)
                         {
-                            Log($"Database '{txtDatabase.Text}' already exists on the server");
+                            Dispatcher.Invoke(() => Log($"Database '{txtDatabase.Text}' already exists on the server"));
                             return true;
                         }
                     }
@@ -204,22 +210,25 @@ namespace WpfDbRestore
             }
             catch (Exception ex)
             {
-                Log($"Error checking database existence: {ex.Message}");
+                Dispatcher.Invoke(() => Log($"Error checking database existence: {ex.Message}"));
                 return true; // Assume exists to prevent overwrite
             }
         }
 
         private void CreateDatabase()
         {
-            string connectionString =
-                $"Host={txtHost.Text};Port={txtPort.Text};Username={txtUsername.Text};Password={txtPassword.Password};Database=postgres";
+            string connectionString = string.Empty;
+            Dispatcher.Invoke(() => connectionString =
+                $"Host={txtHost.Text};Port={txtPort.Text};Username={txtUsername.Text};Password={txtPassword.Password};Database=postgres");
 
             try
             {
                 using (var conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand($"CREATE DATABASE \"{txtDatabase.Text}\"", conn))
+                    string cmdText = string.Empty;
+                    Dispatcher.Invoke(() => cmdText = $"CREATE DATABASE \"{txtDatabase.Text}\"");
+                    using (var cmd = new NpgsqlCommand($"{cmdText}", conn))
                     {
                         cmd.ExecuteNonQuery();
                         Dispatcher.Invoke(() => Log($"База данных '{txtDatabase.Text}' создана"));
@@ -233,14 +242,21 @@ namespace WpfDbRestore
             }
         }
 
-        private void RestoreBackup()
+        private async Task RestoreBackup()
         {
-            string pgRestorePath = Environment.ExpandEnvironmentVariables(txtPgRestorePath.Text);
-            string backupPath = Path.GetFullPath(txtBackupFile.Text);
+            string pgRestorePath = string.Empty;
+            Dispatcher.Invoke(() => pgRestorePath = Environment.ExpandEnvironmentVariables(txtPgRestorePath.Text));
+            pgRestorePath = Environment.ExpandEnvironmentVariables(
+                pgRestorePath.Replace("~", "%USERPROFILE%"));
+            string backupPath = string.Empty;
+            Dispatcher.Invoke(() => backupPath = Path.GetFullPath(txtBackupFile.Text));
 
-            string arguments =
-                $"-h {txtHost.Text} -p {txtPort.Text} -U {txtUsername.Text} -d {txtDatabase.Text} -Fc -v \"{backupPath}\"";
-
+            string arguments = string.Empty;
+            Dispatcher.Invoke(() =>
+                arguments =
+                    $"-h {txtHost.Text} -p {txtPort.Text} -U {txtUsername.Text} -d {txtDatabase.Text} -Fc -v \"{backupPath}\"");
+            var pgsPassw = string.Empty;
+            Dispatcher.Invoke(()=> pgsPassw = txtPassword.Password);
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -251,7 +267,7 @@ namespace WpfDbRestore
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     CreateNoWindow = true,
-                    Environment = { ["PGPASSWORD"] = txtPassword.Password }
+                    Environment = { ["PGPASSWORD"] = pgsPassw }
                 }
             };
 
@@ -268,7 +284,8 @@ namespace WpfDbRestore
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-            process.WaitForExit();
+            
+            await process.WaitForExitAsync();
 
             if (process.ExitCode == 0)
             {
@@ -280,28 +297,32 @@ namespace WpfDbRestore
             }
         }
 
-        private void ExecuteScripts()
+        private async Task ExecuteScripts()
         {
-            string scriptsFolder = Path.GetFullPath(txtScriptsFolder.Text);
+            string scriptsFolder = string.Empty;
+            Dispatcher.Invoke(() => scriptsFolder = Path.GetFullPath(txtScriptsFolder.Text));
+
             if (!Directory.Exists(scriptsFolder))
             {
-                Log($"Scripts folder not found: {scriptsFolder}");
+                Dispatcher.Invoke(() => Log($"Scripts folder not found: {scriptsFolder}"));
                 return;
             }
 
-            string connectionString =
-                $"Host={txtHost.Text};Port={txtPort.Text};Username={txtUsername.Text};Password={txtPassword.Password};Database={txtDatabase.Text}";
+            string connectionString = string.Empty;
+            Dispatcher.Invoke(() =>
+                connectionString =
+                    $"Host={txtHost.Text};Port={txtPort.Text};Username={txtUsername.Text};Password={txtPassword.Password};Database={txtDatabase.Text}");
 
             var scriptFiles = Directory.GetFiles(scriptsFolder, "*.sql", SearchOption.TopDirectoryOnly);
             if (scriptFiles.Length == 0)
             {
-                Log("No SQL scripts found in the specified folder");
+                Dispatcher.Invoke(() => Log("No SQL scripts found in the specified folder"));
                 return;
             }
 
-            Array.Sort(scriptFiles); // Execute in alphabetical order
+            Array.Sort(scriptFiles);
 
-            Log($"Found {scriptFiles.Length} SQL scripts to execute");
+            Dispatcher.Invoke(() => Log($"Found {scriptFiles.Length} SQL scripts to execute"));
 
             using (var conn = new NpgsqlConnection(connectionString))
             {
@@ -309,21 +330,22 @@ namespace WpfDbRestore
 
                 foreach (var scriptFile in scriptFiles)
                 {
-                    Log($"Executing script: {Path.GetFileName(scriptFile)}");
+                    Dispatcher.Invoke(() => Log($"Executing script: {Path.GetFileName(scriptFile)}"));
 
                     try
                     {
                         string scriptContent = File.ReadAllText(scriptFile);
                         using (var cmd = new NpgsqlCommand(scriptContent, conn))
                         {
-                            cmd.ExecuteNonQuery();
+                            await cmd.ExecuteNonQueryAsync();
                         }
 
-                        Log($"Script executed successfully: {Path.GetFileName(scriptFile)}");
+                        Dispatcher.Invoke(() => Log($"Script executed successfully: {Path.GetFileName(scriptFile)}"));
                     }
                     catch (Exception ex)
                     {
-                        Log($"Error executing script {Path.GetFileName(scriptFile)}: {ex.Message}");
+                        Dispatcher.Invoke(() =>
+                            Log($"Error executing script {Path.GetFileName(scriptFile)}: {ex.Message}"));
                     }
                 }
             }
@@ -333,11 +355,9 @@ namespace WpfDbRestore
         {
             try
             {
-                // Блокируем кнопку на время выполнения
                 restoreButton.IsEnabled = false;
                 txtLog.Clear();
 
-                // Запускаем процесс восстановления в фоновом потоке
                 await Task.Run(() => PerformRestoreAsync());
             }
             catch (Exception ex)
@@ -358,7 +378,6 @@ namespace WpfDbRestore
         {
             try
             {
-                // 1. Валидация
                 await Dispatcher.InvokeAsync(() => Log("Начало проверки параметров..."));
                 if (!ValidateInputs(out var missingFields))
                 {
@@ -373,15 +392,12 @@ namespace WpfDbRestore
                 if (!CheckBackupFileExists()) return;
                 if (CheckDatabaseExists()) return;
 
-                // 2. Создание БД
                 await Dispatcher.InvokeAsync(() => Log("Создание базы данных..."));
                 await Task.Run(() => CreateDatabase());
 
-                // 3. Восстановление
                 await Dispatcher.InvokeAsync(() => Log("Запуск восстановления бэкапа..."));
                 await Task.Run(() => RestoreBackup());
 
-                // 4. Выполнение скриптов
                 await Dispatcher.InvokeAsync(() => Log("Выполнение SQL-скриптов..."));
                 await Task.Run(() => ExecuteScripts());
 
@@ -396,7 +412,6 @@ namespace WpfDbRestore
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            // Открываем ссылку в браузере по умолчанию
             Process.Start(new ProcessStartInfo
             {
                 FileName = e.Uri.AbsoluteUri,

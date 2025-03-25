@@ -8,88 +8,90 @@
         Title="Postgres Restore Backup" Height="450" Width="800">
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <!-- Backup File -->
-        <Label Grid.Row="0" Grid.Column="0" Content="Ссылка на бэкап:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Name="txtBackupFile" Margin="0,0,5,5" 
-             Text=".\backups\2025.backup"/>
-        <Button Grid.Row="0" Grid.Column="2" Content="Путь..." Margin="0,0,0,5" 
-            Click="BrowseBackupFile_Click"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="Ссылка на бэкап:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="0" Grid.Column="1" Name="txtBackupFile" Margin="0,0,5,5"
+                 Text=".\backups\2025.backup" />
+        <Button Grid.Row="0" Grid.Column="2" Content="Путь..." Margin="0,0,0,5"
+                Click="BrowseBackupFile_Click" />
 
         <!-- Scripts Folder -->
-        <Label Grid.Row="1" Grid.Column="0" Content="SQL скрипты:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Name="txtScriptsFolder" Margin="0,0,5,5" 
-             Text=".\scripts"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="Путь..." Margin="0,0,0,5" 
-            Click="BrowseScriptsFolder_Click"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="SQL скрипты:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="1" Grid.Column="1" Name="txtScriptsFolder" Margin="0,0,5,5"
+                 Text=".\scripts" />
+        <Button Grid.Row="1" Grid.Column="2" Content="Путь..." Margin="0,0,0,5"
+                Click="BrowseScriptsFolder_Click" />
 
         <!-- Server Settings -->
-        <Label Grid.Row="2" Grid.Column="0" Content="Хост:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Name="txtHost" Margin="0,0,5,5" 
-             Text="localhost"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="Хост:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="2" Grid.Column="1" Name="txtHost" Margin="0,0,5,5"
+                 Text="localhost" />
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Порт:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="3" Grid.Column="1" Name="txtPort" Margin="0,0,5,5" 
-             Text="5432"/>
+        <Label Grid.Row="3" Grid.Column="0" Content="Порт:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="3" Grid.Column="1" Name="txtPort" Margin="0,0,5,5"
+                 Text="5432" />
 
-        <Label Grid.Row="4" Grid.Column="0" Content="Логин:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="4" Grid.Column="1" Name="txtUsername" Margin="0,0,5,5" 
-             Text="postgres"/>
+        <Label Grid.Row="4" Grid.Column="0" Content="Логин:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="4" Grid.Column="1" Name="txtUsername" Margin="0,0,5,5"
+                 Text="postgres" />
 
-        <Label Grid.Row="5" Grid.Column="0" Content="Пароль:" Margin="0,0,5,5"/>
-        <PasswordBox Grid.Row="5" Grid.Column="1" Name="txtPassword" Margin="0,0,5,5" 
-                Password="postgres"/>
+        <Label Grid.Row="5" Grid.Column="0" Content="Пароль:" Margin="0,0,5,5" />
+        <PasswordBox Grid.Row="5" Grid.Column="1" Name="txtPassword" Margin="0,0,5,5"
+                     Password="postgres" />
 
-        <Label Grid.Row="6" Grid.Column="0" Content="Имя БД:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="6" Grid.Column="1" Name="txtDatabase" Margin="0,0,5,5" 
-             Text="bpmsoft"/>
+        <Label Grid.Row="6" Grid.Column="0" Content="Имя БД:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="6" Grid.Column="1" Name="txtDatabase" Margin="0,0,5,5"
+                 Text="bpmsoft" />
 
         <!-- pg_restore Path -->
-        <Label Grid.Row="7" Grid.Column="0" Content="Путь к pg_restore:" Margin="0,0,5,5"/>
-        <TextBox Grid.Row="7" Grid.Column="1" Name="txtPgRestorePath" Margin="0,0,5,5" 
-             Text="~\AppData\Local\Programs\pgAdmin 4\runtime\pg_restore.exe"/>
-        <Button Grid.Row="7" Grid.Column="2" Content="Путь..." Margin="0,0,0,5" 
-            Click="BrowsePgRestorePath_Click"/>
+        <Label Grid.Row="7" Grid.Column="0" Content="Путь к pg_restore:" Margin="0,0,5,5" />
+        <TextBox Grid.Row="7" Grid.Column="1" Name="txtPgRestorePath" Margin="0,0,5,5"
+                 Text="~\AppData\Local\Programs\pgAdmin 4\runtime\pg_restore.exe" />
+        <Button Grid.Row="7" Grid.Column="2" Content="Путь..." Margin="0,0,0,5"
+                Click="BrowsePgRestorePath_Click" />
 
         <!-- Log Output -->
-        <Label Grid.Row="8" Grid.Column="0" Content="Лог:" Margin="0,10,5,5"/>
-        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Name="txtLog" 
-             Margin="0,10,0,5" Height="200" VerticalScrollBarVisibility="Auto" 
-             HorizontalScrollBarVisibility="Auto" TextWrapping="Wrap" 
-             IsReadOnly="True" AcceptsReturn="True"/>
+        <Label Grid.Row="8" Grid.Column="0" Content="Лог:" Margin="0,10,5,5" />
+        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Name="txtLog"
+                 Margin="0,10,0,5" Height="200" VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" TextWrapping="Wrap"
+                 IsReadOnly="True" AcceptsReturn="True" />
 
         <!-- Restore Button -->
-        <Button x:Name="restoreButton" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Content="Восстановить" 
-            HorizontalAlignment="Right" Width="100" Height="30" Margin="0,10,0,0" 
-            Click="RestoreButton_Click"/>
-        
+        <Button x:Name="restoreButton" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Content="Восстановить"
+                HorizontalAlignment="Right" Width="100" Height="30" Margin="0,10,0,0"
+                Click="RestoreButton_Click" />
+
         <!-- Гиперссылки внизу слева -->
-        <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Margin="60,10,0,0">
-            <Hyperlink NavigateUri="https://github.com/aprogrammer-ru/PostgresRestoreWpfUI" RequestNavigate="Hyperlink_RequestNavigate">
-                Исходники утилиты
-            </Hyperlink>
-        </TextBlock>
-        
-        <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
-            <Hyperlink NavigateUri="about:blank" Click="HelpHyperlink_Click">
-                Справка
-            </Hyperlink>
-        </TextBlock>
+        <Grid Grid.Row="9" Grid.Column="0" ColumnSpan="2">
+            <TextBlock HorizontalAlignment="Left" Margin="5,10,0,0">
+                <Hyperlink NavigateUri="about:blank" Click="HelpHyperlink_Click">
+                    Справка
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Left" Margin="60,10,0,0">
+                <Hyperlink NavigateUri="https://github.com/aprogrammer-ru/PostgresRestoreWpfUI"
+                           RequestNavigate="Hyperlink_RequestNavigate">
+                    Исходники утилиты
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
     </Grid>
 </Window>
