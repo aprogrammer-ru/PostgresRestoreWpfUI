@@ -293,7 +293,7 @@ namespace WpfDbRestore
             }
             else
             {
-                throw new Exception($"Процесс восстановления завершился с кодом {process.ExitCode}");
+                Dispatcher.Invoke(() => Log($"Восстановление завершено с ошибками, код {process.ExitCode}"));
             }
         }
 
@@ -406,7 +406,6 @@ namespace WpfDbRestore
             catch (Exception ex)
             {
                 await Dispatcher.InvokeAsync(() => Log($"Ошибка во время восстановления: {ex.Message}"));
-                throw;
             }
         }
 
